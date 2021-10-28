@@ -122,3 +122,52 @@ par(mfrow=c(1,2))
 plot(k.1,vertex.label=NA, vertex.color=c("red", rep("lightblue", 16)))
 plot(k.34, vertex.label=NA,vertex.color=c(rep("lightblue",17),"red"))
 View(g.full)
+
+hist(degree(karate),col="lightblue",xlim=c(0,50),xlab="vertex degree", ylab="frequency", main="")
+hist(strength(karate), col="pink", xlab="vertex strength",ylab="frequency", main="
+     ")
+library(igraphdata)
+a.nn.deg.yeast <- knn(yeast, V(yeast)$knn)
+plot(d.yeast, a.nn.deg.yeast, log="xy", col="goldenrod", xlab=c("Log Vertex Degrees"), ylab=c("Log Average Neighbor Degree"))
+A <- as_adjacency_matrix(karate, sparse=FALSE)
+library(network)
+g <- network::as.network.matrix(A)
+library(sna)
+sna::gplot.target(g,degree(g.gmode="graph"), main="degree", circ.lab=FALSE, circ.col="skyblue",ann)
+
+for (i in (1:len)) {  
+  c1temp <- numeric(ntrials)  
+  ap1temp <- numeric(ntrials)  
+  for (j in (1:ntrials))  { 
+    g <- sample_smallworld(1, 1000, 10, 10^steps[i]) 
+    c1temp[j] <- transitivity(g) 
+    ap1temp[j] <- mean_distance(g)
+  } 
+  c1[i] <- mean(c1temp) 
+  ap1[i] <- mean(ap1temp) 
+}
+
+for (i in (1:ntrials)) {
+  g.rg <- sample_gnm(nv, ne)
+  c.rg <- cluster_fast_greedy(g.rg)
+  num.comm.rg[i] <- length(c.rg)
+}
+
+num.comm.grg <- numeric(ntrials)
+for(i in (1:ntrials))
+{
+  g.grg <- sample_degseq(degs, method="vl")
+  c.grg <- cluster_fast_greedy(g.grg)
+  num.comm.grg[i] <- length(c.grg)
+}
+
+clut_coef_dir <- function(graph) {
+  A <- as.matrix(as_adjacency_matrix(graph))
+  S <- A + t(A)
+  deg <- degree(graph, mode=c("total"))
+  num <- diag (S % * % S % * % S)
+  denom <- diag(A % * % A)
+  denom <- 2 * (deg * (deg -1) - 2 * denom)
+  c1 <- mean(num/denom)
+  return (c1)
+}
